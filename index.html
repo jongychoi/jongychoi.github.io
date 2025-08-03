@@ -1,83 +1,137 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>MySajuAI - 나의 일주 찾기</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; max-width: 680px; margin: 40px auto; padding: 25px; line-height: 1.6; color: #333; }
-        h1 { text-align: center; color: #4A4A4A; }
-        .input-group { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
-        .date-type { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; font-size: 1.1em; }
-        input[type="number"] { width: 100px; padding: 10px; text-align: center; border: 1px solid #ccc; border-radius: 5px; font-size: 1em; }
-        button { padding: 10px 20px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 5px; font-size: 1em; }
-        button:hover { background-color: #0056b3; }
-        #result { margin-top: 30px; padding: 25px; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; text-align: center; font-size: 1.2em; display: none; }
-        #result p { margin: 5px 0; }
-        strong { color: #d63384; }
-    </style>
+  <meta charset="UTF-8" />
+  <title>MySajuAI - 나의 일주 찾기</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      max-width: 680px;
+      margin: 40px auto;
+      padding: 25px;
+      line-height: 1.6;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #4A4A4A;
+    }
+    .input-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .date-type {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      font-size: 1.1em;
+    }
+    input[type="number"] {
+      width: 100px;
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+    button {
+      padding: 10px 20px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #result {
+      margin-top: 30px;
+      padding: 25px;
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.2em;
+      display: none;
+    }
+    #result p {
+      margin: 5px 0;
+    }
+    strong {
+      color: #d63384;
+    }
+  </style>
 </head>
 <body>
-    <h1>📜 나의 일주(日柱) 찾기</h1>
-    <p style="text-align: center; color: #6c757d;">당신의 사주를 구성하는 핵심 기둥인 '일주'를 찾아보세요.</p>
+  <h1>📜 나의 일주(日柱) 찾기</h1>
+  <p style="text-align: center; color: #6c757d;">
+    당신의 사주를 구성하는 핵심 기둥인 '일주'를 찾아보세요.
+  </p>
 
-    <div class="date-type">
-        <label><input type="radio" name="calendarType" value="solar" checked> 양력</label>
-        <label><input type="radio" name="calendarType" value="lunar"> 음력</label>
-    </div>
+  <div class="date-type">
+    <label><input type="radio" name="calendarType" value="solar" checked> 양력</label>
+    <label><input type="radio" name="calendarType" value="lunar"> 음력</label>
+  </div>
 
-    <div class="input-group">
-        <input type="number" id="year" placeholder="태어난 연도">
-        <input type="number" id="month" placeholder="태어난 월">
-        <input type="number" id="day" placeholder="태어난 일">
-        <button id="calcButton">결과 확인</button>
-    </div>
-    <div id="result"></div>
+  <div class="input-group">
+    <input type="number" id="year" placeholder="태어난 연도" />
+    <input type="number" id="month" placeholder="태어난 월" />
+    <input type="number" id="day" placeholder="태어난 일" />
+    <button id="calcButton">결과 확인</button>
+  </div>
 
-    <script type="module">
-        // 1. ESM 버전 라이브러리를 import 합니다.
-        import { Solar, Lunar } from "https://cdn.jsdelivr.net/npm/@lunisolar/core@2/dist/esm/index.js";
+  <div id="result"></div>
 
-        // 2. 함수를 정의합니다.
-        function calculateIlju() {
-            const year = document.getElementById('year').value;
-            const month = document.getElementById('month').value;
-            const day = document.getElementById('day').value;
-            const calendarType = document.querySelector('input[name="calendarType"]:checked').value;
+  <!-- ✅ UMD 버전 라이브러리 삽입 -->
+  <script src="https://cdn.jsdelivr.net/npm/@lunisolar/core@2/dist/umd/index.min.js"></script>
 
-            if (!year || !month || !day) {
-                alert("생년월일을 모두 입력해주세요.");
-                return;
-            }
+  <script>
+    // ✅ 전역 lunisolar 객체 접근
+    document.getElementById('calcButton').addEventListener('click', function () {
+      const year = document.getElementById('year').value;
+      const month = document.getElementById('month').value;
+      const day = document.getElementById('day').value;
+      const calendarType = document.querySelector('input[name="calendarType"]:checked').value;
 
-            try {
-                let dateInstance;
-                let resultHtml = '';
+      if (!year || !month || !day) {
+        alert("생년월일을 모두 입력해주세요.");
+        return;
+      }
 
-                if (calendarType === 'solar') {
-                    dateInstance = Solar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
-                    const lunar = dateInstance.getLunar();
-                    resultHtml += `<p>입력하신 양력 ${year}년 ${month}월 ${day}일은</p><p>음력으로는 ${lunar.toString()} 입니다.</p>`;
-                } else {
-                    dateInstance = Lunar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
-                    const solar = dateInstance.getSolar();
-                    resultHtml += `<p>입력하신 음력 ${year}년 ${month}월 ${day}일은</p><p>양력으로는 ${solar.toString()} 입니다.</p>`;
-                }
+      try {
+        let dateInstance;
+        let resultHtml = '';
 
-                const cyclicalDate = dateInstance.getCyclicalDate();
-                const dayPillar = cyclicalDate.day.toString();
-
-                const resultDiv = document.getElementById('result');
-                resultHtml += `<p style="margin-top: 20px;">당신의 일주는 <strong>${dayPillar}</strong> 입니다.</p>`;
-                resultDiv.innerHTML = resultHtml;
-                resultDiv.style.display = 'block';
-            } catch(e) {
-                alert("올바른 날짜를 입력해주세요. 오류: " + e.message);
-            }
+        if (calendarType === 'solar') {
+          dateInstance = lunisolar.Solar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
+          const lunar = dateInstance.getLunar();
+          resultHtml += `<p>입력하신 양력 ${year}년 ${month}월 ${day}일은</p><p>음력으로는 ${lunar.toString()} 입니다.</p>`;
+        } else {
+          dateInstance = lunisolar.Lunar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
+          const solar = dateInstance.getSolar();
+          resultHtml += `<p>입력하신 음력 ${year}년 ${month}월 ${day}일은</p><p>양력으로는 ${solar.toString()} 입니다.</p>`;
         }
 
-        // 3. 버튼 클릭 이벤트를 자바스크립트 코드 안에서 직접 연결합니다.
-        document.getElementById('calcButton').addEventListener('click', calculateIlju);
-    </script>
+        const cyclicalDate = dateInstance.getCyclicalDate();
+        const dayPillar = cyclicalDate.day.toString();
+
+        const resultDiv = document.getElementById('result');
+        resultHtml += `<p style="margin-top: 20px;">당신의 일주는 <strong>${dayPillar}</strong> 입니다.</p>`;
+        resultDiv.innerHTML = resultHtml;
+        resultDiv.style.display = 'block';
+      } catch (e) {
+        alert("올바른 날짜를 입력해주세요. 오류: " + e.message);
+      }
+    });
+  </script>
 </body>
 </html>
+
