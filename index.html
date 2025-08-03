@@ -51,13 +51,13 @@
                 let dateInstance;
                 let resultHtml = '';
 
-                // lunisolar 라는 전역 객체를 사용하여 클래스에 접근합니다.
+                // ★★★★★ 핵심 수정사항: lunisolar -> LUNISOLAR (대문자) ★★★★★
                 if (calendarType === 'solar') {
-                    dateInstance = lunisolar.Solar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
+                    dateInstance = LUNISOLAR.Solar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
                     const lunar = dateInstance.getLunar();
                     resultHtml += `<p>입력하신 양력 ${year}년 ${month}월 ${day}일은</p><p>음력으로는 ${lunar.toString()} 입니다.</p>`;
                 } else {
-                    dateInstance = lunisolar.Lunar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
+                    dateInstance = LUNISOLAR.Lunar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
                     const solar = dateInstance.getSolar();
                     resultHtml += `<p>입력하신 음력 ${year}년 ${month}월 ${day}일은</p><p>양력으로는 ${solar.toString()} 입니다.</p>`;
                 }
@@ -74,7 +74,6 @@
             }
         }
 
-        // 버튼 클릭 이벤트를 자바스크립트 코드 안에서 직접 연결합니다.
         const calcButton = document.getElementById('calcButton');
         calcButton.addEventListener('click', calculateIlju);
     </script>
