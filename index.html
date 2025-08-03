@@ -7,31 +7,46 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; max-width: 680px; margin: 40px auto; padding: 25px; line-height: 1.6; color: #333; }
         h1 { text-align: center; color: #4A4A4A; }
-        .input-group { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; align-items: center; }
-        input { width: 100px; padding: 10px; text-align: center; border: 1px solid #ccc; border-radius: 5px; font-size: 1em; }
+        .input-group { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
+        .date-type { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; font-size: 1.1em; }
+        input[type="number"] { width: 100px; padding: 10px; text-align: center; border: 1px solid #ccc; border-radius: 5px; font-size: 1em; }
         button { padding: 10px 20px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 5px; font-size: 1em; }
         button:hover { background-color: #0056b3; }
-        #result { margin-top: 30px; padding: 25px; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; text-align: center; font-size: 1.3em; display: none; }
+        #result { margin-top: 30px; padding: 25px; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; text-align: center; font-size: 1.2em; display: none; }
+        #result p { margin: 5px 0; }
         strong { color: #d63384; }
     </style>
-    <script src="https://unpkg.com/korean-lunar-calendar/build/korean-lunar-calendar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/korean-lunar-calendar/build/korean-lunar-calendar.min.js"></script>
 </head>
 <body>
     <h1>📜 나의 일주(日柱) 찾기</h1>
     <p style="text-align: center; color: #6c757d;">당신의 사주를 구성하는 핵심 기둥인 '일주'를 찾아보세요.</p>
+
+    <div class="date-type">
+        <label><input type="radio" name="calendarType" value="solar" checked> 양력</label>
+        <label><input type="radio" name="calendarType" value="lunar"> 음력</label>
+    </div>
+
     <div class="input-group">
         <input type="number" id="year" placeholder="태어난 연도">
         <input type="number" id="month" placeholder="태어난 월">
         <input type="number" id="day" placeholder="태어난 일">
-        <button onclick="calculateIlju()">결과 확인</button>
+        <button id="calcButton">결과 확인</button>
     </div>
     <div id="result"></div>
 
     <script>
+        // 페이지의 모든 내용이 로드된 후에 스크립트가 실행되도록 보장합니다.
+        document.addEventListener('DOMContentLoaded', function() {
+            const calcButton = document.getElementById('calcButton');
+            calcButton.addEventListener('click', calculateIlju);
+        });
+
         function calculateIlju() {
             const year = document.getElementById('year').value;
             const month = document.getElementById('month').value;
             const day = document.getElementById('day').value;
+            const calendarType = document.querySelector('input[name="calendarType"]:checked').value;
 
             if (!year || !month || !day) {
                 alert("생년월일을 모두 입력해주세요.");
@@ -39,14 +54,26 @@
             }
 
             try {
+                // KoreanLunarCalendar가 이제 확실히 로드된 상태입니다.
                 const calendar = new KoreanLunarCalendar();
-                calendar.setSolarDate(parseInt(year), parseInt(month), parseInt(day));
-                
+                let resultHtml = '';
+
+                if (calendarType === 'solar') {
+                    calendar.setSolarDate(parseInt(year), parseInt(month), parseInt(day));
+                    const convertedLunar = calendar.getLunarDateString();
+                    resultHtml += `<p>입력하신 양력 ${year}년 ${month}월 ${day}일은</p><p>음력으로는 ${convertedLunar} 입니다.</p>`;
+                } else {
+                    calendar.setLunarDate(parseInt(year), parseInt(month), parseInt(day));
+                    const convertedSolar = calendar.getSolarDateString();
+                    resultHtml += `<p>입력하신 음력 ${year}년 ${month}월 ${day}일은</p><p>양력으로는 ${convertedSolar} 입니다.</p>`;
+                }
+
                 const ganjiString = calendar.getGanjiString();
                 const dayPillar = ganjiString.split(' ')[2];
 
                 const resultDiv = document.getElementById('result');
-                resultDiv.innerHTML = `당신의 일주는 <strong>${dayPillar.replace('일','')}</strong> 입니다.`;
+                resultHtml += `<p style="margin-top: 20px;">당신의 일주는 <strong>${dayPillar.replace('일','')}</strong> 입니다.</p>`;
+                resultDiv.innerHTML = resultHtml;
                 resultDiv.style.display = 'block';
             } catch(e) {
                 alert("올바른 날짜를 입력해주세요. 오류: " + e.message);
