@@ -16,10 +16,26 @@
         #result p { margin: 5px 0; }
         strong { color: #d63384; }
     </style>
-    <script type="module">
-        import { Solar, Lunar } from "https://cdn.jsdelivr.net/npm/@lunisolar/core@2/dist/esm/index.js";
+    <script src="https://cdn.jsdelivr.net/npm/@lunisolar/core@2/dist/iife/index.min.js"></script>
+</head>
+<body>
+    <h1>📜 나의 일주(日柱) 찾기</h1>
+    <p style="text-align: center; color: #6c757d;">당신의 사주를 구성하는 핵심 기둥인 '일주'를 찾아보세요.</p>
 
-        // 함수를 정의합니다.
+    <div class="date-type">
+        <label><input type="radio" name="calendarType" value="solar" checked> 양력</label>
+        <label><input type="radio" name="calendarType" value="lunar"> 음력</label>
+    </div>
+
+    <div class="input-group">
+        <input type="number" id="year" placeholder="태어난 연도">
+        <input type="number" id="month" placeholder="태어난 월">
+        <input type="number" id="day" placeholder="태어난 일">
+        <button id="calcButton">결과 확인</button>
+    </div>
+    <div id="result"></div>
+
+    <script>
         function calculateIlju() {
             const year = document.getElementById('year').value;
             const month = document.getElementById('month').value;
@@ -35,12 +51,13 @@
                 let dateInstance;
                 let resultHtml = '';
 
+                // lunisolar 라는 전역 객체를 사용하여 클래스에 접근합니다.
                 if (calendarType === 'solar') {
-                    dateInstance = Solar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
+                    dateInstance = lunisolar.Solar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
                     const lunar = dateInstance.getLunar();
                     resultHtml += `<p>입력하신 양력 ${year}년 ${month}월 ${day}일은</p><p>음력으로는 ${lunar.toString()} 입니다.</p>`;
                 } else {
-                    dateInstance = Lunar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
+                    dateInstance = lunisolar.Lunar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
                     const solar = dateInstance.getSolar();
                     resultHtml += `<p>입력하신 음력 ${year}년 ${month}월 ${day}일은</p><p>양력으로는 ${solar.toString()} 입니다.</p>`;
                 }
@@ -57,26 +74,9 @@
             }
         }
 
-        // ★★★★★ 핵심 수정사항 ★★★★★
-        // 모듈 안의 함수를 바깥에서도 쓸 수 있도록 window 객체에 연결합니다.
-        window.calculateIlju = calculateIlju;
+        // 버튼 클릭 이벤트를 자바스크립트 코드 안에서 직접 연결합니다.
+        const calcButton = document.getElementById('calcButton');
+        calcButton.addEventListener('click', calculateIlju);
     </script>
-</head>
-<body>
-    <h1>📜 나의 일주(日柱) 찾기</h1>
-    <p style="text-align: center; color: #6c757d;">당신의 사주를 구성하는 핵심 기둥인 '일주'를 찾아보세요.</p>
-
-    <div class="date-type">
-        <label><input type="radio" name="calendarType" value="solar" checked> 양력</label>
-        <label><input type="radio" name="calendarType" value="lunar"> 음력</label>
-    </div>
-
-    <div class="input-group">
-        <input type="number" id="year" placeholder="태어난 연도">
-        <input type="number" id="month" placeholder="태어난 월">
-        <input type="number" id="day" placeholder="태어난 일">
-        <button onclick="calculateIlju()">결과 확인</button>
-    </div>
-    <div id="result"></div>
 </body>
 </html>
