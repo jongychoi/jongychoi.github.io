@@ -16,7 +16,6 @@
         #result p { margin: 5px 0; }
         strong { color: #d63384; }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@lunisolar/core@2/dist/iife/index.min.js"></script>
 </head>
 <body>
     <h1>📜 나의 일주(日柱) 찾기</h1>
@@ -35,7 +34,11 @@
     </div>
     <div id="result"></div>
 
-    <script>
+    <script type="module">
+        // 1. ESM 버전 라이브러리를 import 합니다.
+        import { Solar, Lunar } from "https://cdn.jsdelivr.net/npm/@lunisolar/core@2/dist/esm/index.js";
+
+        // 2. 함수를 정의합니다.
         function calculateIlju() {
             const year = document.getElementById('year').value;
             const month = document.getElementById('month').value;
@@ -51,13 +54,12 @@
                 let dateInstance;
                 let resultHtml = '';
 
-                // ★★★★★ 핵심 수정사항: lunisolar -> LUNISOLAR (대문자) ★★★★★
                 if (calendarType === 'solar') {
-                    dateInstance = LUNISOLAR.Solar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
+                    dateInstance = Solar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
                     const lunar = dateInstance.getLunar();
                     resultHtml += `<p>입력하신 양력 ${year}년 ${month}월 ${day}일은</p><p>음력으로는 ${lunar.toString()} 입니다.</p>`;
                 } else {
-                    dateInstance = LUNISOLAR.Lunar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
+                    dateInstance = Lunar.fromYmd(parseInt(year), parseInt(month), parseInt(day));
                     const solar = dateInstance.getSolar();
                     resultHtml += `<p>입력하신 음력 ${year}년 ${month}월 ${day}일은</p><p>양력으로는 ${solar.toString()} 입니다.</p>`;
                 }
@@ -74,8 +76,8 @@
             }
         }
 
-        const calcButton = document.getElementById('calcButton');
-        calcButton.addEventListener('click', calculateIlju);
+        // 3. 버튼 클릭 이벤트를 자바스크립트 코드 안에서 직접 연결합니다.
+        document.getElementById('calcButton').addEventListener('click', calculateIlju);
     </script>
 </body>
 </html>
